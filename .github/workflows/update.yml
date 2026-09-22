@@ -1,0 +1,49 @@
+name: Rebuild Pylon
+
+on:
+  schedule:
+    # Every day at 9:00 AM Eastern (13:00 UTC): new play-by-play, lines, injuries, depth charts
+    - cron: "0 13 * * *"
+    # Game days (Thu, Sun, Mon): every 2 hours from 10 AM to 6 PM Eastern for line moves and inactives
+    - cron: "0 14-23/2 * * 0,1,4"
+    - cron: "30 15 * * 0"   # ~90 minutes before the 1 PM Sunday window
+  workflow_dispatch: {}   # "Run workflow" button for a manual rebuild
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      # Past seasons never change, so keep them between runs
+      - uses: actions/cache@v4
+        with:
+          path: data
+          key: nflverse-${{ github.run_id }}
+          restore-keys: nflverse-
+      - run: python pylon_build.py
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
