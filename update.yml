@@ -1,7 +1,7 @@
 name: Rebuild Pylon
 
 on:
-    schedule:
+  schedule:
     - cron: "7 13 * * *"            # 9:07 AM Eastern every day
     - cron: "37 14-22/2 * * 0,1,4"  # Thu, Sun, Mon: every 2 hours, 10:37 AM to 6:37 PM Eastern
     - cron: "23 15 * * 0"           # Sunday 11:23 AM Eastern, before the early games
