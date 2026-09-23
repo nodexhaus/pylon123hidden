@@ -1,12 +1,10 @@
 name: Rebuild Pylon
 
 on:
-  schedule:
-    # Every day at 9:00 AM Eastern (13:00 UTC): new play-by-play, lines, injuries, depth charts
-    - cron: "0 13 * * *"
-    # Game days (Thu, Sun, Mon): every 2 hours from 10 AM to 8 PM Eastern for line moves and inactives
-    - cron: "0 14-23/2 * * 0,1,4"
-    - cron: "30 15 * * 0"   # ~90 minutes before the 1 PM Sunday window
+    schedule:
+    - cron: "7 13 * * *"            # 9:07 AM Eastern every day
+    - cron: "37 14-22/2 * * 0,1,4"  # Thu, Sun, Mon: every 2 hours, 10:37 AM to 6:37 PM Eastern
+    - cron: "23 15 * * 0"           # Sunday 11:23 AM Eastern, before the early games
   workflow_dispatch: {}   # "Run workflow" button for a manual rebuild
 
 permissions:
